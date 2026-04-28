@@ -3,33 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NPF CBT Practice - Ghost</title>
+    <title>NPF CBT - Instant Feedback</title>
     <style>
         :root {
             --primary: #1a2a3a;
             --accent: #d4af37;
             --success: #27ae60;
+            --error: #e74c3c;
             --bg: #fdfdfd;
-            --text: #333;
         }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; line-height: 1.6; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
         .container { background: #fff; width: 100%; max-width: 650px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        h1 { color: var(--primary); font-size: 1.4rem; text-align: center; margin-bottom: 30px; letter-spacing: 1px; text-transform: uppercase; }
+        h1 { color: var(--primary); font-size: 1.4rem; text-align: center; margin-bottom: 30px; text-transform: uppercase; }
         .question { display: none; }
         .question.active { display: block; }
         .question-text { font-weight: 600; margin-bottom: 20px; font-size: 1.15rem; color: var(--primary); }
         .options { list-style: none; padding: 0; }
         .options li { margin-bottom: 12px; }
-        label { display: block; padding: 15px; border: 1px solid #eaeaea; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
-        label:hover { border-color: var(--accent); background: #fffdf5; }
-        input[type="radio"] { margin-right: 12px; transform: scale(1.2); accent-color: var(--primary); }
+        
+        /* Interactive States */
+        label { display: block; padding: 15px; border: 1px solid #eaeaea; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        label.correct { background: #d4edda !important; border-color: var(--success) !important; color: #155724; font-weight: bold; }
+        label.wrong { background: #f8d7da !important; border-color: var(--error) !important; color: #721c24; }
+        label.disabled { cursor: not-allowed; opacity: 0.7; }
+        
+        input[type="radio"] { display: none; } /* Hide radio to use label as button */
+
         .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
-        button { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; }
-        #next-btn { background: var(--primary); color: white; }
-        #submit-btn { background: var(--success); color: white; display: none; }
-        #progress { font-size: 0.9rem; color: #666; font-weight: 500; }
-        #result-display { text-align: center; padding: 20px; }
-        .score-val { font-size: 3rem; color: var(--primary); display: block; margin: 10px 0; }
+        button { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; background: var(--primary); color: white; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        #progress { font-size: 0.9rem; color: #666; }
+        #result-box { text-align: center; }
     </style>
 </head>
 <body>
@@ -40,19 +44,15 @@
     
     <div class="controls">
         <div id="progress">Question 1 of 50</div>
-        <button id="next-btn" onclick="nextQuestion()">Next Question</button>
-        <button id="submit-btn" onclick="calculateScore()">Submit Test</button>
+        <button id="next-btn" onclick="nextQuestion()" disabled>Next Question</button>
     </div>
 </div>
 
 <div class="container" id="result-box" style="display:none;">
-    <h1>Test Results</h1>
-    <div id="result-display">
-        Your Final Score:
-        <span class="score-val" id="score-num">0</span>
-        <div id="remark" style="margin-bottom: 20px;"></div>
-    </div>
-    <button onclick="location.reload()" style="width:100%; background:var(--primary); color:white;">Restart Practice</button>
+    <h1>Final Result</h1>
+    <div style="font-size: 3rem; margin: 20px 0;" id="score-num">0</div>
+    <p id="remark"></p>
+    <button onclick="location.reload()" style="width:100%;">Restart Practice</button>
 </div>
 
 <script>
@@ -70,24 +70,24 @@
         { q: "Which agency supervises the affairs of the Nigeria Police Force?", a: "Police Service Commission PSC", options: ["Police Service Organization PSO", "Ministry of Police Affairs MPA", "Nigeria Police Council NPC", "Police Service Commission PSC"] },
         { q: "Who is the present Chief of Defense Staff?", a: "Gen. Olufemi Oluyede", options: ["Bello Matawalle", "Mohammed Badaru Abubakar", "Gen. Olufemi Oluyede", "Dogara David"] },
         { q: "The Current Minister of Finance is?", a: "Wale Edun", options: ["Wale Edun", "Bola Ahmed Tinubu", "Bashiru Babangida", "Wale Shola"] },
-        { q: "Who is the current Speaker of the Nigeria House of Representatives?", a: "Tajudeen Abbas", options: ["Tajudeen Abbas", "Tijjani Umaru", "Abubakar Yusuf", "Garba Kabiru"] },
+        { q: "Who is the current Speaker of the House of Reps?", a: "Tajudeen Abbas", options: ["Tajudeen Abbas", "Tijjani Umaru", "Abubakar Yusuf", "Garba Kabiru"] },
         { q: "When did Nigeria become a Republic?", a: "October 1st, 1963", options: ["October 1st, 1960", "October 1st, 1963", "October 1st, 1966", "October 1st, 1980"] },
         { q: "What year did the Nigeria Civil War start?", a: "1967", options: ["1967", "1976", "1986", "1970"] },
-        { q: "In what year was the Nigeria Flag designed and who designed it?", a: "Mr. Taiwo Akinkunmi in 1959", options: ["Mr. Taiwo Akinkunmi in 1959", "Mr. Afolabi Shola in 1983", "Mr. Hammanbello Abubakar in 1987", "Mr Goodnews Babakunle in 1960"] },
+        { q: "In what year was the Nigeria Flag designed?", a: "Mr. Taiwo Akinkunmi in 1959", options: ["Mr. Taiwo Akinkunmi in 1959", "Mr. Afolabi Shola in 1983", "Mr. Hammanbello Abubakar in 1987", "Mr Goodnews Babakunle in 1960"] },
         { q: "What is the current estimated population of Nigeria?", a: "242 Million", options: ["182 Million", "242 Million", "2023 Million", "185 Million"] },
-        { q: "What is the nickname of the Nigeria Female National football team?", a: "Super Falcons", options: ["Super Eagles", "Super Falcons", "Super Hawks", "Super Heroes"] },
+        { q: "What is the nickname of the Nigeria Female football team?", a: "Super Falcons", options: ["Super Eagles", "Super Falcons", "Super Hawks", "Super Heroes"] },
         { q: "What does the 'E' in EFCC stand for?", a: "Economic", options: ["Exceed", "Economic", "Eliminate", "Encourage"] },
         { q: "Heartbeat of the Nation is the slogan for which State?", a: "Edo State", options: ["Delta State", "Abia State", "Edo State", "Adamawa State"] },
         { q: "The Amalgamation of Northern and Southern protectorates was in?", a: "1914", options: ["1960", "1957", "1966", "1914"] },
         { q: "What year did the Nigeria Civil War end?", a: "January 15, 1970", options: ["15th January, 1970", "15th February, 1975", "15th December, 1970", "15th January, 2023"] },
-        { q: "Judicial independence is supported by appointment of Judges by the?", a: "Judicial Service Commission", options: ["1979 Constitution", "Judicial Service Commission", "Civil Service Commission", "Law Review Commission"] },
-        { q: "EFCC was established primarily to?", a: "Combat Economic and Financial Crime in Nigeria", options: ["Arrest corrupt state governors", "Trial corrupt politicians", "Assist World Bank", "Combat Economic and Financial Crime in Nigeria"] },
+        { q: "Judicial independence is supported by appointment of Judges by?", a: "Judicial Service Commission", options: ["1979 Constitution", "Judicial Service Commission", "Civil Service Commission", "Law Review Commission"] },
+        { q: "EFCC was established primarily to?", a: "Combat Economic and Financial Crime in Nigeria", options: ["Arrest corrupt governors", "Trial corrupt politicians", "Assist World Bank", "Combat Economic and Financial Crime in Nigeria"] },
         { q: "The branch of Government responsible for implementing laws is?", a: "Executive", options: ["Judiciary", "Legislative", "Executive", "Police"] },
         { q: "What is the capital of Ebonyi State?", a: "Abakaliki", options: ["Afikpo", "Abakaliki", "Ishiagu", "Jimeta"] },
-        { q: "In which year did the Nigeria Golden Eaglets win the first world under 17 FIFA Cup?", a: "1985", options: ["1985", "1986", "1987", "1982"] },
+        { q: "What year did the Eaglets win the first U-17 World Cup?", a: "1985", options: ["1985", "1986", "1987", "1982"] },
         { q: "What Ocean borders Nigeria?", a: "Atlantic Ocean", options: ["Pacific Ocean", "Indian Ocean", "Atlantic Ocean", "Yola River"] },
         { q: "What is the National Flower of Nigeria?", a: "Yellow Trumpet", options: ["Hibiscus", "Yellow Trumpet", "Rose", "Green"] },
-        { q: "When was National Youth Service Corps (NYSC) introduced?", a: "1973", options: ["1960", "1963", "1973", "1982"] },
+        { q: "When was NYSC introduced?", a: "1973", options: ["1960", "1963", "1973", "1982"] },
         { q: "Where is the source of River Niger?", a: "Guinea Highlands", options: ["Guinea Highlands", "Niger State", "Niger republic", "Cameroon republic"] },
         { q: "When did Nigeria relocate its Capital to Abuja?", a: "December 12, 1991", options: ["January 12, 1991", "June 12, 1991", "December 12, 1991", "November 30, 1983"] },
         { q: "The first story building in Nigeria was built in?", a: "Badagry", options: ["Badagry", "Asaba", "Kano", "Yola"] },
@@ -103,14 +103,14 @@
         { q: "What does the White colour in the Nigerian Flag stand for?", a: "Peace", options: ["War", "Peace", "Light", "Love"] },
         { q: "Who gave Nigeria her Name?", a: "Flora Shaw", options: ["General Sani Abacha", "General Murtala Mohammed", "Flora Shaw", "President Olusegun Obasanjo"] },
         { q: "How many Local Governments are in Nigeria?", a: "774", options: ["744", "774", "747", "784"] },
-        { q: "Democracy Day is now celebrated in Nigeria on?", a: "June 12th", options: ["October 1st", "January 12th", "May 29th", "June 12th"] },
-        { q: "How many members make up the Senate in the National Assembly?", a: "109", options: ["100", "108", "109", "110"] },
-        { q: "Who is the current Chairman of the Police Service Commission (PSC)?", a: "Hashimu Argungu", options: ["Solomon Arase", "M.D Abubakar", "Hashimu Argungu", "Shola Akiniyi"] },
+        { q: "Democracy Day is celebrated in Nigeria on?", a: "June 12th", options: ["October 1st", "January 12th", "May 29th", "June 12th"] },
+        { q: "How many members make up the Senate?", a: "109", options: ["100", "108", "109", "110"] },
+        { q: "Who is the current Chairman of the PSC?", a: "Hashimu Argungu", options: ["Solomon Arase", "M.D Abubakar", "Hashimu Argungu", "Shola Akiniyi"] },
         { q: "What is the full meaning of IPPIS?", a: "Integrated Payroll and Personnel Information System", options: ["Intelligent Penalty Pay Service", "Integrated Payroll and Personnel Information System", "Investment People Party Scheme", "Integrated Payroll and People information Service"] }
     ];
 
     let currentIdx = 0;
-    const userAnswers = [];
+    let score = 0;
 
     function initQuiz() {
         const container = document.getElementById('question-container');
@@ -120,8 +120,14 @@
             div.id = `q-${index}`;
             
             let optionsHtml = '';
-            item.options.forEach(opt => {
-                optionsHtml += `<li><label><input type="radio" name="answer-${index}" value="${opt}"> ${opt}</label></li>`;
+            item.options.forEach((opt, optIdx) => {
+                optionsHtml += `
+                    <li>
+                        <label id="label-${index}-${optIdx}">
+                            <input type="radio" name="answer-${index}" value="${opt}" onclick="checkAnswer(${index}, ${optIdx}, '${opt}')"> 
+                            ${opt}
+                        </label>
+                    </li>`;
             });
 
             div.innerHTML = `<div class="question-text">${index + 1}. ${item.q}</div><ul class="options">${optionsHtml}</ul>`;
@@ -129,41 +135,55 @@
         });
     }
 
-    function nextQuestion() {
-        const selected = document.querySelector(`input[name="answer-${currentIdx}"]:checked`);
-        if (!selected) {
-            alert("Select an option to proceed.");
-            return;
+    function checkAnswer(qIdx, optIdx, selectedVal) {
+        const correctVal = questions[qIdx].a;
+        const labels = document.querySelectorAll(`#q-${qIdx} label`);
+        const nextBtn = document.getElementById('next-btn');
+
+        // Disable all radios in this question
+        labels.forEach(label => {
+            label.classList.add('disabled');
+            label.querySelector('input').disabled = true;
+        });
+
+        if (selectedVal === correctVal) {
+            document.getElementById(`label-${qIdx}-${optIdx}`).classList.add('correct');
+            score++;
+        } else {
+            document.getElementById(`label-${qIdx}-${optIdx}`).classList.add('wrong');
+            // Highlight the correct one
+            labels.forEach((label, i) => {
+                if (questions[qIdx].options[i] === correctVal) {
+                    label.classList.add('correct');
+                }
+            });
         }
         
-        userAnswers[currentIdx] = selected.value;
+        nextBtn.disabled = false;
+        if (currentIdx === questions.length - 1) {
+            nextBtn.innerText = "Finish Test";
+        }
+    }
+
+    function nextQuestion() {
         document.getElementById(`q-${currentIdx}`).classList.remove('active');
         currentIdx++;
 
         if (currentIdx < questions.length) {
             document.getElementById(`q-${currentIdx}`).classList.add('active');
             document.getElementById('progress').innerText = `Question ${currentIdx + 1} of ${questions.length}`;
-            if (currentIdx === questions.length - 1) {
-                document.getElementById('next-btn').style.display = 'none';
-                document.getElementById('submit-btn').style.display = 'block';
-            }
+            document.getElementById('next-btn').disabled = true;
+        } else {
+            showFinalResult();
         }
     }
 
-    function calculateScore() {
-        const selected = document.querySelector(`input[name="answer-${currentIdx}"]:checked`);
-        if (selected) userAnswers[currentIdx] = selected.value;
-
-        let score = 0;
-        questions.forEach((item, index) => {
-            if (userAnswers[index] === item.a) score++;
-        });
-
+    function showFinalResult() {
         document.getElementById('quiz-box').style.display = 'none';
         document.getElementById('result-box').style.display = 'block';
         document.getElementById('score-num').innerText = score + " / " + questions.length;
         
-        const remark = score > 40 ? "Excellent! You are ready." : (score > 25 ? "Good job, but keep studying." : "You need more practice.");
+        const remark = score > 40 ? "Brilliant! You're ready." : (score > 25 ? "Good effort. Review the ones you missed." : "Needs work. Try again!");
         document.getElementById('remark').innerText = remark;
     }
 
