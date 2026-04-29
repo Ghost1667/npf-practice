@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NPF CBT - Instant Feedback</title>
+    <title>Common Entrance Practice - Security Education</title>
     <style>
         :root {
             --primary: #1a2a3a;
@@ -14,20 +14,19 @@
         }
         body { font-family: 'Inter', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
         .container { background: #fff; width: 100%; max-width: 650px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        h1 { color: var(--primary); font-size: 1.4rem; text-align: center; margin-bottom: 30px; text-transform: uppercase; }
+        h1 { color: var(--primary); font-size: 1.4rem; text-align: center; margin-bottom: 30px; text-transform: uppercase; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
         .question { display: none; }
         .question.active { display: block; }
         .question-text { font-weight: 600; margin-bottom: 20px; font-size: 1.15rem; color: var(--primary); }
         .options { list-style: none; padding: 0; }
         .options li { margin-bottom: 12px; }
         
-        /* Interactive States */
         label { display: block; padding: 15px; border: 1px solid #eaeaea; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         label.correct { background: #d4edda !important; border-color: var(--success) !important; color: #155724; font-weight: bold; }
         label.wrong { background: #f8d7da !important; border-color: var(--error) !important; color: #721c24; }
         label.disabled { cursor: not-allowed; opacity: 0.7; }
         
-        input[type="radio"] { display: none; } /* Hide radio to use label as button */
+        input[type="radio"] { display: none; } 
 
         .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
         button { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; background: var(--primary); color: white; }
@@ -39,7 +38,7 @@
 <body>
 
 <div class="container" id="quiz-box">
-    <h1>NPF CBT Practice</h1>
+    <h1>Common Entrance Practice</h1>
     <div id="question-container"></div>
     
     <div class="controls">
@@ -49,64 +48,64 @@
 </div>
 
 <div class="container" id="result-box" style="display:none;">
-    <h1>Final Result</h1>
+    <h1>Practice Complete</h1>
     <div style="font-size: 3rem; margin: 20px 0;" id="score-num">0</div>
     <p id="remark"></p>
-    <button onclick="location.reload()" style="width:100%;">Restart Practice</button>
+    <button onclick="location.reload()" style="width:100%;">Restart Session</button>
 </div>
 
 <script>
     const questions = [
-        { q: "The full meaning of NPC in the context of police supervision is?", a: "Nigeria Police Council", options: ["Nigeria Police Commission", "National Policy Committee", "Nigeria Police Council", "Nigeria Petroleum Commission"] },
-        { q: "The first Inspector General of the Nigeria Police Force was?", a: "Louis Edet", options: ["Teslim Balogun", "Louis Edet", "Ademola Adetokunbo", "Mike Okiro"] },
-        { q: "To qualify for the post of the President in Nigeria, a person must be at least?", a: "35 Years", options: ["35 Years", "20 years", "40 years", "55 years"] },
-        { q: "What is the full meaning of IGP?", a: "Inspector General of Police", options: ["Inspector General of People", "In charge of General Public", "Inspector General of Police", "Institute of General people"] },
-        { q: "What year was the Nigeria Police reorganized into 7 Area Commands?", a: "1986", options: ["1986", "1914", "1960", "1985"] },
-        { q: "What is the full meaning of NPF?", a: "Nigeria Police Force", options: ["National Police Formation", "Nigeria People Forum", "Nigeria Public Forms", "Nigeria Police Force"] },
-        { q: "When did Nigeria gain her Independence?", a: "October 1st, 1960", options: ["1st October, 1940", "1st October, 1860", "October 1st, 1946", "October 1st, 1960"] },
-        { q: "What is the Nigeria Police Force Motto?", a: "Police is your Friend", options: ["Police is your Security", "Police is your Guard", "People Safety", "Police is your Friend"] },
-        { q: "When was the Nigeria Police Force (NPF) established?", a: "1830", options: ["1935", "1930", "1830", "1835"] },
-        { q: "Who was the first Executive President of Nigeria?", a: "Alh. Shehu Shagari", options: ["Alh. Muhammadu Buhari", "Alh. Murtala Abubakar", "Alh. Shehu Shagari", "Alh. Yahaya Suleiman"] },
-        { q: "Which agency supervises the affairs of the Nigeria Police Force?", a: "Police Service Commission PSC", options: ["Police Service Organization PSO", "Ministry of Police Affairs MPA", "Nigeria Police Council NPC", "Police Service Commission PSC"] },
-        { q: "Who is the present Chief of Defense Staff?", a: "Gen. Olufemi Oluyede", options: ["Bello Matawalle", "Mohammed Badaru Abubakar", "Gen. Olufemi Oluyede", "Dogara David"] },
-        { q: "The Current Minister of Finance is?", a: "Wale Edun", options: ["Wale Edun", "Bola Ahmed Tinubu", "Bashiru Babangida", "Wale Shola"] },
-        { q: "Who is the current Speaker of the House of Reps?", a: "Tajudeen Abbas", options: ["Tajudeen Abbas", "Tijjani Umaru", "Abubakar Yusuf", "Garba Kabiru"] },
-        { q: "When did Nigeria become a Republic?", a: "October 1st, 1963", options: ["October 1st, 1960", "October 1st, 1963", "October 1st, 1966", "October 1st, 1980"] },
-        { q: "What year did the Nigeria Civil War start?", a: "1967", options: ["1967", "1976", "1986", "1970"] },
-        { q: "In what year was the Nigeria Flag designed?", a: "Mr. Taiwo Akinkunmi in 1959", options: ["Mr. Taiwo Akinkunmi in 1959", "Mr. Afolabi Shola in 1983", "Mr. Hammanbello Abubakar in 1987", "Mr Goodnews Babakunle in 1960"] },
-        { q: "What is the current estimated population of Nigeria?", a: "242 Million", options: ["182 Million", "242 Million", "2023 Million", "185 Million"] },
-        { q: "What is the nickname of the Nigeria Female football team?", a: "Super Falcons", options: ["Super Eagles", "Super Falcons", "Super Hawks", "Super Heroes"] },
-        { q: "What does the 'E' in EFCC stand for?", a: "Economic", options: ["Exceed", "Economic", "Eliminate", "Encourage"] },
-        { q: "Heartbeat of the Nation is the slogan for which State?", a: "Edo State", options: ["Delta State", "Abia State", "Edo State", "Adamawa State"] },
-        { q: "The Amalgamation of Northern and Southern protectorates was in?", a: "1914", options: ["1960", "1957", "1966", "1914"] },
-        { q: "What year did the Nigeria Civil War end?", a: "January 15, 1970", options: ["15th January, 1970", "15th February, 1975", "15th December, 1970", "15th January, 2023"] },
-        { q: "Judicial independence is supported by appointment of Judges by?", a: "Judicial Service Commission", options: ["1979 Constitution", "Judicial Service Commission", "Civil Service Commission", "Law Review Commission"] },
-        { q: "EFCC was established primarily to?", a: "Combat Economic and Financial Crime in Nigeria", options: ["Arrest corrupt governors", "Trial corrupt politicians", "Assist World Bank", "Combat Economic and Financial Crime in Nigeria"] },
-        { q: "The branch of Government responsible for implementing laws is?", a: "Executive", options: ["Judiciary", "Legislative", "Executive", "Police"] },
-        { q: "What is the capital of Ebonyi State?", a: "Abakaliki", options: ["Afikpo", "Abakaliki", "Ishiagu", "Jimeta"] },
-        { q: "What year did the Eaglets win the first U-17 World Cup?", a: "1985", options: ["1985", "1986", "1987", "1982"] },
-        { q: "What Ocean borders Nigeria?", a: "Atlantic Ocean", options: ["Pacific Ocean", "Indian Ocean", "Atlantic Ocean", "Yola River"] },
-        { q: "What is the National Flower of Nigeria?", a: "Yellow Trumpet", options: ["Hibiscus", "Yellow Trumpet", "Rose", "Green"] },
-        { q: "When was NYSC introduced?", a: "1973", options: ["1960", "1963", "1973", "1982"] },
-        { q: "Where is the source of River Niger?", a: "Guinea Highlands", options: ["Guinea Highlands", "Niger State", "Niger republic", "Cameroon republic"] },
-        { q: "When did Nigeria relocate its Capital to Abuja?", a: "December 12, 1991", options: ["January 12, 1991", "June 12, 1991", "December 12, 1991", "November 30, 1983"] },
-        { q: "The first story building in Nigeria was built in?", a: "Badagry", options: ["Badagry", "Asaba", "Kano", "Yola"] },
-        { q: "Bonny Lights is a type of Nigerian?", a: "Crude Oil", options: ["Crude Oil", "Local Bear", "Palm Oil", "Food"] },
-        { q: "What State is nicknamed the Centre of Commerce?", a: "Kano State", options: ["Gombe State", "Kano State", "Lagos State", "Adamawa State"] },
-        { q: "What was the first private university in Nigeria?", a: "Igbinedion University", options: ["Igbinedion University", "Covenant University", "Al Qalam University", "Modibbo Adama University"] },
-        { q: "What is the official name of Third Mainland Bridge?", a: "Ibrahim Babangida Bridge", options: ["Olusegun Obasanjo Bridge", "Ibrahim Babangida Bridge", "Bola Ahmed Tinubu Bridge", "Fintiri Air Bridge"] },
-        { q: "Central Bank of Nigeria (CBN) was established in what year?", a: "1958", options: ["1950", "1958", "1923", "1969"] },
-        { q: "Nigeria is divided into how many geo-political zones?", a: "6", options: ["4", "6", "8", "21"] },
-        { q: "The most populated Country in the world is?", a: "India", options: ["China", "America", "India", "Nigeria"] },
-        { q: "Who was the first Nigerian to win a Nobel Prize?", a: "Prof. Wole Soyinka", options: ["Prof. Yakubu Gowan", "Prof. Wole Soyinka", "Prof. Buhari Haruna", "Prof. Hananiah David"] },
-        { q: "What does the Eagle in the Nigeria coat of arms represent?", a: "Strength", options: ["Bird", "Strength", "Power", "Flying"] },
-        { q: "What does the White colour in the Nigerian Flag stand for?", a: "Peace", options: ["War", "Peace", "Light", "Love"] },
-        { q: "Who gave Nigeria her Name?", a: "Flora Shaw", options: ["General Sani Abacha", "General Murtala Mohammed", "Flora Shaw", "President Olusegun Obasanjo"] },
-        { q: "How many Local Governments are in Nigeria?", a: "774", options: ["744", "774", "747", "784"] },
-        { q: "Democracy Day is celebrated in Nigeria on?", a: "June 12th", options: ["October 1st", "January 12th", "May 29th", "June 12th"] },
-        { q: "How many members make up the Senate?", a: "109", options: ["100", "108", "109", "110"] },
-        { q: "Who is the current Chairman of the PSC?", a: "Hashimu Argungu", options: ["Solomon Arase", "M.D Abubakar", "Hashimu Argungu", "Shola Akiniyi"] },
-        { q: "What is the full meaning of IPPIS?", a: "Integrated Payroll and Personnel Information System", options: ["Intelligent Penalty Pay Service", "Integrated Payroll and Personnel Information System", "Investment People Party Scheme", "Integrated Payroll and People information Service"] }
+        { q: "Security Education is important to the society because _______", a: "it promotes peace and tranquility", options: ["it promotes national disorderliness", "it gives insecurity", "it reduces our value", "it promotes peace and tranquility", "All of the above"] },
+        { q: "The unlawful or declaration that is contrary to the truth is called _______", a: "Falsehood", options: ["Dishonesty", "Forgery", "Falsehood", "Impersonation", "None of the above"] },
+        { q: "The following are examples of common crime except _______", a: "Standing", options: ["Rape", "Standing", "Examination malpractice", "Thuggery", "All of the above"] },
+        { q: "The act that violates a law which results in parliament is known as _______", a: "Crime", options: ["Victim", "Commission", "Crime", "Falsehood", "Murder"] },
+        { q: "The act of having sexual intercourse with a person without his/her permission is known as _______", a: "Cape", options: ["Cultism", "Murder", "Rape", "Theft", "All of the above"] },
+        { q: "The unlawful killing of another person without justification is called _______", a: "Murder", options: ["Dishonesty", "Rape", "Murder", "Smuggling", "Theft"] },
+        { q: "A deliberate deception to secure unfair and unlawful gain is called _______", a: "Fraud", options: ["Theft", "Murder", "Piracy", "Fraud", "None of the above"] },
+        { q: "One of the causes of rape is _______", a: "Indecent Dressing", options: ["Social Stigma", "Unwanted Pregnancy", "Decent Dressing", "Indecent Dressing", "None of the above"] },
+        { q: "Goods that are not allowed by the law to be imported into a country are known as _______", a: "Contraband", options: ["Illegal", "Contraband", "Foreign", "Secret Cult", "All of the above"] },
+        { q: "The following are causes of murder except _______", a: "Peace", options: ["Jealousy", "Peace", "Greed", "Hatred", "Revenge"] },
+        { q: "_______ is the relationship on blood covenant", a: "Cult", options: ["Personal", "Fraud", "Rape", "Cult", "All of the above"] },
+        { q: "The non-medical use of drugs is known as _______", a: "Drug Abuse", options: ["Child Abuse", "Peer Pressure", "Self Esteem", "Drug Abuse", "All of the above"] },
+        { q: "The act of protecting anything valuable such as lives and properties is called _______", a: "Security", options: ["Education", "Security", "Awareness", "Protection", "None of the above"] },
+        { q: "The awareness, knowledge or enlightenment given to citizens for the protection of lives and properties is called _______", a: "Security Education", options: ["Education", "Security", "Awareness", "Protection", "Security Education"] },
+        { q: "Any act that is harmful to an individual or community is _______", a: "Crime", options: ["Punishment", "Omission", "Addition", "Crime", "Security"] },
+        { q: "All these are types of crime except _______", a: "Criminology", options: ["Property Crime", "Personal Crime", "Organized Crime", "Victimless Crime", "Criminology"] },
+        { q: "Theft can be otherwise called _______", a: "Stealing", options: ["Stealing", "Falsehood", "Rape", "Piracy", "None of the above"] },
+        { q: "_______ is an act of lying", a: "Falsehood", options: ["Cultism", "Embezzlement", "Piracy", "Theft", "Falsehood"] },
+        { q: "An act of pretending to be another person in order to defraud is called _______", a: "Impersonation", options: ["Forgery", "Dishonesty", "Impersonation", "Sophistication", "None of the above"] },
+        { q: "The type of crime that is committed when someone damages, destroys or steals someone's property is _______", a: "Property Crime", options: ["Property Crime", "Personal Crime", "Victimless Crime", "Organized Crime", "None of the above"] },
+        { q: "Any crime that results in physical, emotional or psychological harm to the victim is known as _______ crime", a: "Personal", options: ["Property", "Organized", "Personal", "Emotional", "Victim"] },
+        { q: "All these are causes of common crimes except _______", a: "Mismanagement", options: ["Poverty", "Over Population", "Family Condition", "Peer group influence", "Mismanagement"] },
+        { q: "The act of taking another person's property without permission with intent to deprive the rightful owner is _______", a: "Theft", options: ["Piracy", "Advanced Free Fraud", "Falsehood", "Theft", "Murder"] },
+        { q: "The bringing in of contraband goods into a country is called _______", a: "Smuggling", options: ["Smuggling", "Importation", "Theft", "Piracy", "None of the above"] },
+        { q: "The illegal or unauthorized duplication of copyrighted content is known as _______", a: "Piracy", options: ["Falsehood", "Piracy", "Smuggling", "Theft"] },
+        { q: "All these are examples of falsehood except _______", a: "Honesty", options: ["Dishonesty", "Forgery", "Impersonation", "Sophistication", "Honesty"] },
+        { q: "All these are reasons for falsehood except _______", a: "None of the above", options: ["Cover up", "Pride and Envy", "Misguided Kindness", "Habit", "None of the above"] },
+        { q: "Which of these is not a consequence of falsehood?", a: "It promotes better relationship", options: ["It harm others", "it influences other to commit crime", "It promotes better relationship", "It leads to loss of respect", "It leads to imprisonment"] },
+        { q: "The crime of taking or attempting to take anything valuable by force or threat of force is _______", a: "Robbery", options: ["Embezzlement", "Robbery", "Fraud", "Burglary", "Corruption"] },
+        { q: "The urge to steal for no reason is known as _______", a: "Kleptomania", options: ["Pilfering", "Kleptomania", "Deprivation", "Poverty", "Theft"] },
+        { q: "Serial killers can otherwise be called _______", a: "Mass murderers", options: ["Murderers", "Cultist", "Mass murderers", "Smugglers", "Killers"] },
+        { q: "The killing of strangers is known as _______", a: "Homicide", options: ["Murder", "Killing", "Serial killing", "Domicile", "Homicide"] },
+        { q: "_______ is the type of fraud whenever someone signs another person's name on a document for personal gain", a: "Forgery Fraud", options: ["Tax Fraud", "Welfare Fraud", "Forgery Fraud", "Identity Fraud", "Fraud in the inducement"] },
+        { q: "The kind of penalty that allows a criminal to serve his/her sentence without going to jail is called _______", a: "Probation", options: ["Restitution", "Incarceration", "Fines", "Probation", "None of the above"] },
+        { q: "When a person illegally obtained personal information regarding another person to assume his/her identity is called _______", a: "Identity Theft", options: ["Identity Theft", "Tax Fraud", "Welfare Fraud", "Forgery Fraud", "Fraud in the inducement"] },
+        { q: "All these are causes of embezzlement except _______", a: "Lack of supervision", options: ["Lack of Commitment", "Extravagant living standard", "Lack of proper accounting", "Inadequate income", "Lack of supervision"] },
+        { q: "_______ is the process of imparting and acquiring general knowledge", a: "education", options: ["education", "Security Education", "Social Studies", "Civic Education", "Government"] },
+        { q: "The offence of a crime is called _______", a: "Criminal Offence", options: ["Criminal Offence", "Security Offence", "Social Offence", "Theft Offence", "All of the above"] },
+        { q: "The following are security agents in Nigeria except _______", a: "Man of War", options: ["Nigerian Police", "Civil Defence", "Nigerian Army", "Nigerian Navy", "Man of War"] },
+        { q: "The attempt to reduce and deter crime and criminal is called _______", a: "Crime Prevention", options: ["Crime Reduction", "Crime Prevention", "Crime deterrent", "Crime Discouragement", "None of the above"] },
+        { q: "The acronym NPF means _______ as Security Agency", a: "Nigeria Police Force", options: ["Nigerian Park Foundation", "National Pro Fastpitch", "National Psoriasis Foundation", "Norton Personal Firewall", "Nigeria Police Force"] },
+        { q: "The acronym NAF as one of the Security Agencies in Nigeria means _______", a: "Nigerian Air Force", options: ["Nigerian Air Force", "Nigeria Air Fence", "National Air Force", "National Air Fence", "Nation Arm Force"] },
+        { q: "The acronym NA is used to represent _______ security agent", a: "Nigerian Army", options: ["Nigerian Army", "National Army", "Nigerian Armed", "National Armed"] },
+        { q: "NN means _______ as a security body in Nigeria", a: "Nigerian Navy", options: ["Nigerian Navy", "National Navy", "Nomen Nescio", "Norman Null"] },
+        { q: "The body that comprises the three arm Forces in Nigeria is called _______", a: "National Armed Forces", options: ["Nigerian Air Force", "Nigerian Armed Forces", "National Armed Forces", "National Air Force", "Nation Arm Fence"] },
+        { q: "The acronym FRSC means _______ as a law enforcement agent", a: "Federal Road Safety Corps", options: ["Federal Road Safety Company", "Federal Road Safety Corps", "Federal Road Service Company", "Federal Road Safety Company"] },
+        { q: "What is an emergency?", a: "An unplanned serious and dangerous event", options: ["A planned, funny and safe event", "A good story", "A creation of plans", "An unplanned serious and dangerous event", "A delightful event"] },
+        { q: "What is the meaning of NEMA?", a: "National Emergency Management Agency", options: ["National Environment Management Agency", "National Emergency Management Agency", "National Environment Management Authority", "National Environment Management Authority", "Nigeria Emergency Management Authority"] },
+        { q: "One of the following is not a home accident", a: "Falling off a tree", options: ["Cuts from knife", "Electric Shock", "Falls from stairways", "Falling off a tree", "Burns and Scalds"] },
+        { q: "The dishonest or fraudulent conduct by those in power typically involving bribery is called _______", a: "Corruption", options: ["Theft", "Fraud", "Bribery", "Embezzlement", "Corruption"] }
     ];
 
     let currentIdx = 0;
@@ -140,7 +139,6 @@
         const labels = document.querySelectorAll(`#q-${qIdx} label`);
         const nextBtn = document.getElementById('next-btn');
 
-        // Disable all radios in this question
         labels.forEach(label => {
             label.classList.add('disabled');
             label.querySelector('input').disabled = true;
@@ -151,7 +149,6 @@
             score++;
         } else {
             document.getElementById(`label-${qIdx}-${optIdx}`).classList.add('wrong');
-            // Highlight the correct one
             labels.forEach((label, i) => {
                 if (questions[qIdx].options[i] === correctVal) {
                     label.classList.add('correct');
@@ -160,9 +157,7 @@
         }
         
         nextBtn.disabled = false;
-        if (currentIdx === questions.length - 1) {
-            nextBtn.innerText = "Finish Test";
-        }
+        if (currentIdx === questions.length - 1) nextBtn.innerText = "Complete Session";
     }
 
     function nextQuestion() {
@@ -183,7 +178,7 @@
         document.getElementById('result-box').style.display = 'block';
         document.getElementById('score-num').innerText = score + " / " + questions.length;
         
-        const remark = score > 40 ? "Brilliant! You're ready." : (score > 25 ? "Good effort. Review the ones you missed." : "Needs work. Try again!");
+        const remark = score > 40 ? "Excellent Performance!" : (score > 25 ? "Good Job. Review the missed questions." : "Keep practicing. You'll get better!");
         document.getElementById('remark').innerText = remark;
     }
 
